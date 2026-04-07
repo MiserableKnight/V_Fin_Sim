@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VietJet Oil Shock Model - Financial Decision System</title>
+    <link rel="stylesheet" href="styles/apple-style.css">
+    <style>
+        /* Additional styles for the landing page */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+            background: #FFFFFF;
+            color: #1D1D1F;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Loading Spinner for CSS */
+        .apple-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .apple-loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Selection color */
+        ::selection {
+            background: rgba(0, 113, 227, 0.2);
+            color: #0071E3;
+        }
+
+        /* Hero animation */
+        @keyframes floatUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-float-up {
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        .animate-delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .animate-delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .animate-delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .animate-delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .animate-delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #0071E3 0%, #00C7BE 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Card shine effect */
+        .card-shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .card-shine:hover::before {
+            left: 100%;
+        }
+
+        /* Feature grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .feature-card {
+            background: #F5F5F7;
+            border-radius: 20px;
+            padding: 40px 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card:hover {
+            background: #FFFFFF;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+            transform: translateY(-8px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            color: #1D1D1F;
+        }
+
+        .feature-description {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #86868B;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 120px 24px;
+            background: linear-gradient(180deg, #F5F5F7 0%, #FFFFFF 100%);
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            background: #0071E3;
+            color: white;
+            font-size: 17px;
+            font-weight: 500;
+            border-radius: 980px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: #0077ED;
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 113, 227, 0.3);
+        }
+
+        /* Stats section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            max-width: 1000px;
+            margin: 80px auto;
+            padding: 0 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .stat-value {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: #0071E3;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #86868B;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        /* Product image section */
+        .product-showcase {
+            position: relative;
+            padding: 80px 24px;
+            text-align: center;
+            background: #F5F5F7;
+            border-radius: 32px;
+            margin: 80px 24px;
+            overflow: hidden;
+        }
+
+        .product-showcase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+        }
+
+        /* Tooltip */
+        .apple-tooltip {
+            position: absolute;
+            background: #1D1D1F;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.2s ease;
+            z-index: 10000;
+        }
+
+        .apple-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Glass Navigation -->
+    <nav class="apple-nav">
+        <div class="apple-nav-content">
+            <a href="#" class="apple-nav-logo">
+                <span>✈️</span>
+                <span>VietJet Oil Shock</span>
+            </a>
+            <div class="apple-nav-links">
+                <a href="#features" class="apple-nav-link">功能</a>
+                <a href="#demo" class="apple-nav-link">演示</a>
+                <a href="#pricing" class="apple-nav-link">定价</a>
+                <a href="#about" class="apple-nav-link">关于</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="apple-hero" style="min-height: 100vh; padding-top: 120px;">
+        <div class="animate-float-up animate-delay-1">
+            <span style="display: inline-block; padding: 8px 20px; background: rgba(0, 113, 227, 0.1); color: #0071E3; font-size: 14px; font-weight: 600; border-radius: 20px; margin-bottom: 24px;">
+                Financial Decision Model v1.0
+            </span>
+        </div>
+
+        <h1 class="apple-hero-title animate-float-up animate-delay-2">
+            VietJet<br>
+            <span class="gradient-text">Oil Shock</span>
+        </h1>
+
+        <p class="apple-hero-subtitle animate-float-up animate-delay-3">
+            基于财报校准的智能决策系统<br>
+            助力油价冲击下的航空运营优化
+        </p>
+
+        <div class="animate-float-up animate-delay-4">
+            <a href="#demo" class="apple-hero-cta">
+                开始使用
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                </svg>
+            </a>
+        </div>
+
+        <!-- Floating dashboard preview -->
+        <div class="animate-float-up animate-delay-5" style="margin-top: 80px;">
+            <div style="max-width: 900px; margin: 0 auto; background: #F5F5F7; border-radius: 20px; padding: 40px; box-shadow: 0 32px 64px rgba(0,0,0,0.08);">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div style="background: white; padding: 24px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 13px; color: #86868B; margin-bottom: 8px;">票价盈亏平衡</div>
+                        <div style="font-size: 32px; font-weight: 700; color: #0071E3;">+8.5%</div>
+                    </div>
+                    <div style="background: white; padding: 24px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 13px; color: #86868B; margin-bottom: 8px;">油价容忍上限</div>
+                        <div style="font-size: 32px; font-weight: 700; color: #34C759;">+45%</div>
+                    </div>
+                    <div style="background: white; padding: 24px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 13px; color: #86868B; margin-bottom: 8px;">套保触发线</div>
+                        <div style="font-size: 32px; font-weight: 700; color: #FF9500;">35%</div>
+                    </div>
+                </div>
+                <div style="height: 200px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #86868B;">
+                    📊 交互式图表预览
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section style="padding: 80px 24px;">
+        <div class="stats-grid apple-scroll-reveal">
+            <div class="stat-item">
+                <div class="stat-value" data-count="64.94">64.94</div>
+                <div class="stat-label">万亿₫ 基础收入</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" data-count="24.7">24.7</div>
+                <div class="stat-label">万亿₫ 燃油成本</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" data-count="121">121</div>
+                <div class="stat-label">机队规模(架)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" data-count="0">0.8</div>
+                <div class="stat-label">需求价格弹性</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" style="padding: 100px 24px; background: #F5F5F7;">
+        <div class="apple-section-header apple-scroll-reveal">
+            <h2 class="apple-section-title">智能决策系统</h2>
+            <p class="apple-section-subtitle" style="margin: 0 auto;">
+                基于真实财报数据校准，提供精准的运营决策建议
+            </p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card apple-scroll-reveal card-shine">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">智能阈值分析</h3>
+                <p class="feature-description">
+                    自动计算票价盈亏平衡点、油价容忍度和套保触发线，提供最优决策路径。
+                </p>
+            </div>
+
+            <div class="feature-card apple-scroll-reveal card-shine">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">多情景扫描</h3>
+                <p class="feature-description">
+                    批量计算不同油价与策略组合，快速识别风险情景和机会窗口。
+                </p>
+            </div>
+
+            <div class="feature-card apple-scroll-reveal card-shine">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">可视化洞察</h3>
+                <p class="feature-description">
+                    交互式图表展示利润热力图、边际贡献趋势和三维决策曲面。
+                </p>
+            </div>
+
+            <div class="feature-card apple-scroll-reveal card-shine">
+                <div class="feature-icon">⚙️</div>
+                <h3 class="feature-title">灵活配置</h3>
+                <p class="feature-description">
+                    支持自定义财务参数、弹性系数和决策约束，适应不同业务场景。
+                </p>
+            </div>
+
+            <div class="feature-card apple-scroll-reveal card-shine">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">风险管理</h3>
+                <p class="feature-description">
+                    四阶段预警系统（健康/承压/高/紧急），及时识别风险等级。
+                </p>
+            </div>
+
+            <div class="feature-card apple-scroll-reveal card-shine">
+                <div class="feature-icon">✂️</div>
+                <h3 class="feature-title">航班优化</h3>
+                <p class="feature-description">
+                    智能计算航班削减比例，在保住网络骨架的同时最大化边际贡献。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Path Section -->
+    <section style="padding: 100px 24px;">
+        <div class="apple-section-header apple-scroll-reveal">
+            <h2 class="apple-section-title">决策响应路径</h2>
+            <p class="apple-section-subtitle" style="margin: 0 auto;">
+                根据油价冲击程度，自动生成阶梯式应对策略
+            </p>
+        </div>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="apple-decision-step apple-scroll-reveal">
+                <div class="apple-step-indicator low">1</div>
+                <div class="apple-step-content">
+                    <h4>🟢 阶段一：票价调整优先</h4>
+                    <p>油价涨幅较低时，优先通过小幅票价上涨对冲成本压力，保持需求稳定。</p>
+                </div>
+            </div>
+
+            <div class="apple-decision-step apple-scroll-reveal">
+                <div class="apple-step-indicator medium">2</div>
+                <div class="apple-step-content">
+                    <h4>🟡 阶段二：启动套保策略</h4>
+                    <p>油价上涨超过容忍度，增加燃油套期保值比例，锁定部分燃油成本。</p>
+                </div>
+            </div>
+
+            <div class="apple-decision-step apple-scroll-reveal">
+                <div class="apple-step-indicator high">3</div>
+                <div class="apple-step-content">
+                    <h4>🟠 阶段三：组合策略应对</h4>
+                    <p>油价大幅上涨，同时使用票价调整和套保工具，考虑削减低效航班。</p>
+                </div>
+            </div>
+
+            <div class="apple-decision-step apple-scroll-reveal">
+                <div class="apple-step-indicator critical">4</div>
+                <div class="apple-step-content">
+                    <h4>🔴 阶段四：战略性停飞</h4>
+                    <p>油价冲击严重，边际贡献为负时，战略性停飞部分航线，保留网络骨架。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="apple-scroll-reveal">
+            <h2 style="font-size: clamp(36px, 6vw, 56px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 20px;">
+                开始智能决策之旅
+            </h2>
+            <p style="font-size: clamp(17px, 2vw, 21px); color: #86868B; max-width: 600px; margin: 0 auto 40px; line-height: 1.5;">
+                基于真实财报数据，科学应对油价波动
+            </p>
+            <a href="#" class="cta-button" data-tooltip="即将推出">
+                启动模型
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="padding: 60px 24px; background: #F5F5F7; border-top: 1px solid rgba(0,0,0,0.08);">
+        <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 15px; color: #86868B; margin-bottom: 12px;">
+                VietJet Air Oil Shock Financial Decision Model v1.0
+            </p>
+            <p style="font-size: 13px; color: #86868B;">
+                基于2025经审计财报数据 · Apple Design Style
+            </p>
+            <p style="font-size: 13px; color: #86868B; margin-top: 24px;">
+                金额单位：万亿越南盾（Trillion VND） | 1 万亿₫ ≈ 400 万美元
+            </p>
+        </div>
+    </footer>
+
+    <script src="scripts/apple-interactions.js"></script>
+    <script>
+        // Initialize Apple UI when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.AppleUI) {
+                AppleUI.init();
+            }
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#' && href !== '#!') {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
+                });
+            });
+
+            // Counter animation
+            const counters = document.querySelectorAll('[data-count]');
+            const observerOptions = { threshold: 0.5 };
+
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = parseFloat(entry.target.dataset.count);
+                        animateCounter(entry.target, target);
+                        counterObserver.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            counters.forEach(counter => counterObserver.observe(counter));
+
+            function animateCounter(element, target) {
+                const duration = 1500;
+                const start = 0;
+                const startTime = performance.now();
+                const hasDecimal = target % 1 !== 0;
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(2, -10 * progress);
+                    const current = start + (target - start) * eased;
+
+                    element.textContent = hasDecimal ? current.toFixed(1) : Math.round(current);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+
+                requestAnimationFrame(update);
+            }
+        });
+    </script>
+</body>
+</html>

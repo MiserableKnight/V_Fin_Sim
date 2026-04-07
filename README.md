@@ -220,6 +220,81 @@ $$\gamma = 0.90$$
 
 ---
 
+### Phase 1：阈值计算与决策路径
+
+#### 阈值1：票价盈亏平衡点
+
+定义：在无套保保护下，使边际贡献为0所需的票价调整幅度。
+
+求解方程：
+$$R_{base}(1+f)(1+\varepsilon f) - V_{other} - V_{fuel}(1+\Delta P_{oil}) = 0$$
+
+使用数值方法（`scipy.optimize.fsolve`）求解 $f$。
+
+#### 阈值2：最大可承受油价涨幅
+
+在票价调整上限 $\Delta P_{fare}^{max}$ 和套保比例上限 $h_{max}$ 下，计算可承受的最大油价涨幅：
+
+$$\Delta P_{oil}^{max} = \frac{R_{adj}^{max} - V_{other} - V_{fuel}}{V_{fuel}(1-h_{max})}$$
+
+其中 $R_{adj}^{max} = R_{base} \times (1 + \Delta P_{fare}^{max}) \times (1 + \varepsilon \Delta P_{fare}^{max})$
+
+#### 阈值3：触发削班的临界套保比例
+
+在给定油价冲击和票价调整上限下，使边际贡献刚好覆盖固定成本所需的套保比例：
+
+$$h^* = 1 - \frac{R_{adj}^{max} - V_{other} - V_{fuel} - FC}{V_{fuel} \times \Delta P_{oil}}$$
+
+#### 四阶段决策路径
+
+| 阶段 | 油价范围 | 响应动作 | 紧急程度 |
+|------|----------|----------|----------|
+| 1 | $\le 60\%$ 油价容忍上限 | 监控 | 🟢 低 |
+| 2 | 60%~85% 油价容忍上限 | 票价上调 | 🟡 中 |
+| 3 | 85%~100% 油价容忍上限 | 套保加仓 + 票价 | 🟠 高 |
+| 4 | > 100% 油价容忍上限 | 削班启动 | 🔴 紧急 |
+
+---
+
+### Phase 2：约束型动作序列优化器
+
+#### 优化目标
+
+在给定约束下，按优先级依次优化三个决策变量：
+
+$$\max_{\Delta P_{fare}, h, \gamma} \quad \pi(\Delta P_{fare}, h, \gamma)$$
+
+**约束条件**：
+- $0 \le \Delta P_{fare} \le \Delta P_{fare}^{max}$（票价上限）
+- $0 \le h \le h_{max}$（套保上限）
+- $0 \le \gamma \le 0.9$（削班比例上限）
+
+#### 分层优化逻辑
+
+**Step 1：票价寻优**
+
+$$\max_{\Delta P_{fare}} CM(\Delta P_{fare}, h=0)$$
+
+目标函数：
+$$CM(\Delta P_{fare}) = R_{base}(1+\Delta P_{fare})(1+\varepsilon \Delta P_{fare}) - V_{other} - V_{fuel}(1+\Delta P_{oil})$$
+
+**解析解**（梯度法）：
+$$\frac{\partial CM}{\partial \Delta P_{fare}} = R_{base}[(1+\varepsilon) + 2\varepsilon \Delta P_{fare}] = 0$$
+
+$$\Delta P_{fare}^* = -\frac{1+\varepsilon}{2\varepsilon}$$
+
+**Step 2：套保寻优**
+
+若 $CM(\Delta P_{fare}^*) < FC$，计算所需套保比例：
+
+$$h^* = 1 - \frac{R_{adj} - V_{other} - V_{fuel} - FC}{V_{fuel} \times \Delta P_{oil}}$$
+
+**Step 3：削班判断**
+
+若 $CM(\Delta P_{fare}^*, h^*) < FC$，按三阶逻辑确定削减比例。
+
+---
+
 ### 关键推论
 
 #### 推论1：套期保值的影响边界
@@ -279,7 +354,7 @@ $$\Delta P_{oil}^{max} = \frac{R_{adj} - V_{other} - V_{fuel}}{V_{fuel}(1-h)}$$
 ### 安装依赖
 
 ```bash
-pip install streamlit pandas numpy plotly openpyxl
+pip install streamlit pandas numpy scipy plotly openpyxl
 ```
 
 ### 运行应用
@@ -294,10 +369,30 @@ streamlit run app.py
 
 ## 📊 功能特性
 
-- **🎯 单情景分析**：调整油价、票价、套保比例，实时查看决策结果
-- **📊 多情景扫描**：批量计算多种组合情景，导出CSV分析
-- **📈 可视化图表**：利润热力图、航班削减图、三维决策曲面
-- **⚙️ 参数自定义**：根据最新财报数据调整模型参数
+### 核心功能
+
+| 功能 | 说明 | 状态 |
+|------|------|------|
+| **单情景分析** | 调整油价、票价、套保比例，实时查看决策结果 | ✅ |
+| **多情景扫描** | 批量计算多种组合情景，导出CSV分析 | ✅ |
+| **阈值分析** | 计算票价盈亏平衡点、油价容忍上限、套保触发线 | ✅ Phase 1 |
+| **决策路径** | 四阶段响应路径可视化（监控→票价→套保→削班） | ✅ Phase 1 |
+| **动作优化器** | 约束型动作序列优化（网格/梯度法） | ✅ Phase 2 |
+| **可视化图表** | 利润热力图、航班削减图、三维决策曲面 | ✅ |
+| **参数自定义** | 根据最新财报数据调整模型参数 | ✅ |
+
+### Phase 1 新增功能
+
+- **🎯 智能决策模式**：输入油价冲击，自动计算最优响应路径
+- **📈 阈值看板**：票价盈亏平衡点、油价容忍上限、削班触发套保线
+- **🚨 预警系统**：约束违规提示、风险等级标识
+
+### Phase 2 新增功能
+
+- **🔢 动作序列优化器**：按优先级依次优化票价→套保→削班
+- **⚡ 双优化方法**：网格搜索（稳健）/ 梯度法（快速）
+- **💡 推荐理由**：每步动作附带详细经济学解释
+- **✅ 可行性检查**：自动检测约束违规情况
 
 ---
 
@@ -307,8 +402,13 @@ streamlit run app.py
 V_Fin_Sim/
 ├── vietjet_oil_model/
 │   ├── __init__.py
-│   └── core_model.py      # 核心模型实现
-├── app.py                  # Streamlit应用入口
+│   ├── core_model.py              # 核心模型实现
+│   ├── threshold_config.py        # Phase 1: 阈值配置
+│   └── optimizer_results.py       # Phase 2: 优化结果数据类
+├── static/
+│   └── landing-page.html          # 落地页
+├── app.py                          # Streamlit应用入口
+├── 方案二.md                       # 设计方案文档
 └── README.md
 ```
 
@@ -316,7 +416,7 @@ V_Fin_Sim/
 
 ## 💡 使用示例
 
-### Python API 使用
+### 基础单情景测算
 
 ```python
 from vietjet_oil_model import VietJetOilShockModel
@@ -333,10 +433,80 @@ result = model.evaluate(
 
 print(f"决策状态: {result.status}")
 print(f"建议航班削减比例: {result.cut_ratio*100:.1f}%")
+print(f"预期运营利润: {result.expected_pnl:.2f} 万亿₫")
+```
+
+### Phase 1：阈值分析
+
+```python
+# 计算决策阈值与响应路径
+threshold_result = model.get_thresholds(
+    oil_increase=0.4,        # 油价+40%
+    fare_cap=0.20,           # 票价最多上调20%
+    hedge_cap=0.80           # 套保最多80%
+)
+
+print(f"票价盈亏平衡点: +{threshold_result.fare_breakeven*100:.1f}%")
+print(f"油价容忍上限: +{threshold_result.oil_tolerance*100:.1f}%")
+print(f"当前阶段: {threshold_result.current_stage}")
+
+# 查看决策路径
+for step in threshold_result.decision_path:
+    print(f"阶段{step['stage']}: {step['action']}")
+    print(f"  触发条件: {step['trigger_value']}")
+    print(f"  推荐: {step['desc']}")
+```
+
+### Phase 2：动作序列优化
+
+```python
+from vietjet_oil_model.optimizer_results import ActionType
+
+# 约束型动作序列优化
+opt_result = model.recommend_action_sequence(
+    oil_increase=0.4,            # 油价+40%
+    fare_cap=0.20,               # 票价最多上调20%
+    hedge_cap=0.80,              # 套保最多80%
+    optimization_method="grid"   # 网格搜索 / "gradient"
+)
+
+print(f"可行性: {'✅' if opt_result.is_feasible else '❌'}")
+print(f"最终边际贡献: {opt_result.final_cm:.2f} 万亿₫")
+print(f"预期利润: {opt_result.final_pnl:.2f} 万亿₫")
+
+# 获取具体动作建议
+fare_action = opt_result.get_action_by_type(ActionType.FARE_ADJUSTMENT)
+hedge_action = opt_result.get_action_by_type(ActionType.HEDGE_POSITION)
+cut_action = opt_result.get_action_by_type(ActionType.CAPACITY_REDUCTION)
+
+print(f"\n票价调整: {fare_action.value*100:+.1f}%")
+print(f"  理由: {fare_action.rationale}")
+
+print(f"\n套保比例: {hedge_action.value*100:.1f}%")
+print(f"  理由: {hedge_action.rationale}")
+
+print(f"\n削班比例: {cut_action.value*100:.1f}%")
+print(f"  理由: {cut_action.rationale}")
+```
+
+### 批量情景扫描
+
+```python
+import pandas as pd
 
 # 批量情景扫描
-df = model.scenario_sweep()
-print(df.head())
+df = model.scenario_sweep(
+    oil_range=[0.1, 0.2, 0.3, 0.4, 0.5],
+    fare_range=[0.0, 0.05, 0.10, 0.15, 0.20],
+    hedge_range=[0.0, 0.3, 0.5, 0.8]
+)
+
+# 筛选健康运营的情景
+healthy_scenarios = df[df['状态类型'] == 'healthy']
+print(f"盈利情景数量: {len(healthy_scenarios)}")
+
+# 导出分析结果
+df.to_csv('scenario_analysis.csv', index=False)
 ```
 
 ---

@@ -1,0 +1,645 @@
+/**
+ * Apple-inspired Design System
+ * 纯白背景 · 极简布局 · 毛玻璃效果 · 大量留白
+ */
+
+:root {
+  /* Apple Color System */
+  --apple-bg: #FFFFFF;
+  --apple-bg-secondary: #F5F5F7;
+  --apple-text: #1D1D1F;
+  --apple-text-secondary: #86868B;
+  --apple-accent: #0071E3;
+  --apple-accent-hover: #0077ED;
+  --apple-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.18);
+
+  /* Spacing - Apple uses generous whitespace */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-4xl: 96px;
+
+  /* Typography - SF Pro inspired */
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                 "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* Shadows - subtle and refined */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.10);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   GLOBAL RESET & BASE STYLES
+============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--apple-bg);
+  color: var(--apple-text);
+  line-height: 1.5;
+  letter-spacing: -0.011em; /* Apple's subtle letter spacing */
+}
+
+/* ============================================
+   GLASS NAVIGATION BAR (毛玻璃导航栏)
+============================================ */
+.apple-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: var(--glass-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--apple-border);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.apple-nav.scrolled {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-sm);
+}
+
+.apple-nav-content {
+  max-width: 980px;
+  width: 100%;
+  padding: 0 var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.apple-nav-logo {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--apple-text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.apple-nav-links {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.apple-nav-link {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--apple-text);
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+}
+
+.apple-nav-link:hover {
+  opacity: 1;
+  color: var(--apple-accent);
+}
+
+/* ============================================
+   HERO SECTION (英雄区域)
+============================================ */
+.apple-hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-4xl) var(--spacing-lg) var(--spacing-3xl);
+  background: var(--apple-bg);
+}
+
+.apple-hero-title {
+  font-size: clamp(40px, 8vw, 80px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  margin-bottom: var(--spacing-md);
+  color: var(--apple-text);
+}
+
+.apple-hero-subtitle {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 400;
+  letter-spacing: 0.007em;
+  line-height: 1.35;
+  color: var(--apple-text-secondary);
+  max-width: 700px;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.apple-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 12px 24px;
+  background: var(--apple-accent);
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.apple-hero-cta:hover {
+  background: var(--apple-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   APPLE CARD (卡片组件)
+============================================ */
+.apple-card {
+  background: var(--apple-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--apple-border);
+  padding: var(--spacing-2xl);
+  transition: all var(--transition-base);
+}
+
+.apple-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.apple-card-elevated {
+  box-shadow: var(--shadow-md);
+}
+
+.apple-card-compact {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   METRIC CARDS (指标卡片)
+============================================ */
+.apple-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+.apple-metric {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: var(--apple-bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+
+.apple-metric:hover {
+  background: var(--apple-bg);
+  box-shadow: var(--shadow-md);
+}
+
+.apple-metric-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--apple-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.apple-metric-value {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--apple-text);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs);
+}
+
+.apple-metric-change {
+  font-size: 15px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.apple-metric-change.positive {
+  color: #34C759;
+}
+
+.apple-metric-change.negative {
+  color: #FF3B30;
+}
+
+.apple-metric-change.neutral {
+  color: var(--apple-text-secondary);
+}
+
+/* ============================================
+   STATUS BADGES (状态徽章)
+============================================ */
+.apple-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.apple-status-healthy {
+  background: rgba(52, 199, 89, 0.1);
+  color: #34C759;
+}
+
+.apple-status-warning {
+  background: rgba(255, 149, 0, 0.1);
+  color: #FF9500;
+}
+
+.apple-status-critical {
+  background: rgba(255, 59, 48, 0.1);
+  color: #FF3B30;
+}
+
+/* ============================================
+   DECISION PATH (决策路径)
+============================================ */
+.apple-decision-path {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: var(--spacing-xl) 0;
+}
+
+.apple-decision-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--apple-bg-secondary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.apple-decision-step:hover {
+  background: var(--apple-bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.apple-step-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.apple-step-indicator.low {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34C759;
+}
+
+.apple-step-indicator.medium {
+  background: rgba(255, 149, 0, 0.15);
+  color: #FF9500;
+}
+
+.apple-step-indicator.high {
+  background: rgba(255, 159, 10, 0.15);
+  color: #FF9F0A;
+}
+
+.apple-step-indicator.critical {
+  background: rgba(255, 59, 48, 0.15);
+  color: #FF3B30;
+}
+
+.apple-step-content {
+  flex: 1;
+}
+
+.apple-step-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin-bottom: 4px;
+}
+
+.apple-step-description {
+  font-size: 15px;
+  color: var(--apple-text-secondary);
+  line-height: 1.4;
+}
+
+/* ============================================
+   SECTION STYLES (区域样式)
+============================================ */
+.apple-section {
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.apple-section-header {
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+}
+
+.apple-section-title {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--spacing-md);
+}
+
+.apple-section-subtitle {
+  font-size: clamp(17px, 2vw, 21px);
+  font-weight: 400;
+  color: var(--apple-text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   DATA TABLE (数据表格)
+============================================ */
+.apple-table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--apple-border);
+}
+
+.apple-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.apple-table thead {
+  background: var(--apple-bg-secondary);
+  position: sticky;
+  top: 0;
+}
+
+.apple-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--apple-text-secondary);
+  border-bottom: 1px solid var(--apple-border);
+}
+
+.apple-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--apple-border);
+  color: var(--apple-text);
+}
+
+.apple-table tbody tr:hover {
+  background: var(--apple-bg-secondary);
+}
+
+.apple-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================
+   THRESHOLD CARDS (阈值卡片)
+============================================ */
+.apple-threshold-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+}
+
+.apple-threshold-card {
+  background: var(--apple-bg);
+  border: 1px solid var(--apple-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.apple-threshold-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--apple-accent);
+}
+
+.apple-threshold-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--apple-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.apple-threshold-value {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--apple-accent);
+}
+
+/* ============================================
+   PROGRESS INDICATORS (进度指示器)
+============================================ */
+.apple-progress-bar {
+  height: 6px;
+  background: var(--apple-bg-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.apple-progress-fill {
+  height: 100%;
+  background: var(--apple-accent);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+/* ============================================
+   ANIMATIONS (滚动动画)
+============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.apple-animate-in {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.apple-animate-delay-1 { animation-delay: 0.1s; }
+.apple-animate-delay-2 { animation-delay: 0.2s; }
+.apple-animate-delay-3 { animation-delay: 0.3s; }
+.apple-animate-delay-4 { animation-delay: 0.4s; }
+
+/* ============================================
+   SCROLL REVEAL (滚动显示)
+============================================ */
+.apple-scroll-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.apple-scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   INFO BOX (信息框)
+============================================ */
+.apple-info-box {
+  padding: var(--spacing-lg);
+  background: var(--apple-bg-secondary);
+  border-left: 3px solid var(--apple-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.apple-info-box-title {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--apple-text);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+============================================ */
+@media (max-width: 768px) {
+  :root {
+    --spacing-lg: 20px;
+    --spacing-xl: 28px;
+    --spacing-2xl: 40px;
+    --spacing-3xl: 56px;
+    --spacing-4xl: 72px;
+  }
+
+  .apple-nav-content {
+    padding: 0 var(--spacing-md);
+  }
+
+  .apple-nav-links {
+    gap: var(--spacing-md);
+  }
+
+  .apple-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .apple-threshold-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .apple-decision-step {
+    padding: var(--spacing-md);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES (工具类)
+============================================ */
+.apple-text-accent { color: var(--apple-accent); }
+.apple-text-secondary { color: var(--apple-text-secondary); }
+.apple-font-semibold { font-weight: 600; }
+.apple-font-bold { font-weight: 700; }
+
+.apple-bg-secondary { background: var(--apple-bg-secondary); }
+.apple-bg-accent { background: var(--apple-accent); }
+
+.apple-mt-sm { margin-top: var(--spacing-sm); }
+.apple-mt-md { margin-top: var(--spacing-md); }
+.apple-mt-lg { margin-top: var(--spacing-lg); }
+.apple-mt-xl { margin-top: var(--spacing-xl); }
+.apple-mt-2xl { margin-top: var(--spacing-2xl); }
+
+.apple-mb-sm { margin-bottom: var(--spacing-sm); }
+.apple-mb-md { margin-bottom: var(--spacing-md); }
+.apple-mb-lg { margin-bottom: var(--spacing-lg); }
+.apple-mb-xl { margin-bottom: var(--spacing-xl); }
+.apple-mb-2xl { margin-bottom: var(--spacing-2xl); }
+
+.apple-p-sm { padding: var(--spacing-sm); }
+.apple-p-md { padding: var(--spacing-md); }
+.apple-p-lg { padding: var(--spacing-lg); }
+.apple-p-xl { padding: var(--spacing-xl); }
