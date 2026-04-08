@@ -11,13 +11,27 @@ def main():
     print("越捷航空油价冲击财务决策模型 - 演示")
     print("=" * 60)
 
-    # 创建模型实例 / Create model instance
+    # 方式1: 使用默认配置（从 config/model_config.yaml 加载）
+    print("\n【方式1: 使用默认配置】")
     model = VietJetOilShockModel()
 
-    print("\n【模型配置】")
-    config = model.get_config_summary()
-    for k, v in config.items():
-        print(f"  {k}: {v}")
+    # 方式2: 从自定义 YAML 配置文件加载
+    # model = VietJetOilShockModel(config_path="my_config.yaml")
+
+    # 方式3: 直接创建配置对象
+    # config = ModelConfig(
+    #     R_base=70.0,
+    #     V_fuel_base=25.0,
+    #     demand_elasticity=-0.9
+    # )
+    # model = VietJetOilShockModel(config=config)
+
+    print("\n【当前配置】")
+    config_dict = model.config.to_dict()
+    for section, params in config_dict.items():
+        print(f"\n  {section}:")
+        for k, v in params.items():
+            print(f"    {k}: {v}")
 
     print("\n【单情景测算示例】")
     print("情景: 油价+40%, 票价+8%, 套保30%")

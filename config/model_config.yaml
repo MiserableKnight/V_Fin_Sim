@@ -1,0 +1,79 @@
+# VietJet Oil Shock Model - Unified Configuration
+# All adjustable parameters in one place
+
+# ============================================
+# Financial Parameters (trillion VND)
+# ============================================
+financial:
+  R_base: 64.94
+  V_fuel_base: 24.70
+  V_other_base: 22.70
+  FC: 19.06
+  fleet_size: 121
+
+# ============================================
+# Demand Model Parameters
+# ============================================
+demand:
+  elasticity: -0.8
+  demand_floor: 0.3
+
+# ============================================
+# Decision Constraints
+# ============================================
+constraints:
+  fare_adjust_min: -0.20
+  fare_adjust_max: 0.30
+  hedge_ratio_min: 0.0
+  hedge_ratio_max: 0.60
+  cut_ratio_min: 0.05
+  cut_ratio_max: 0.90
+  cut_ratio_critical: 0.90
+  network_preserve: 0.25
+
+# ============================================
+# Threshold Parameters
+# ============================================
+threshold:
+  stage_monitor_threshold: 0.60
+  stage_fare_threshold: 0.85
+  stage_hedge_threshold: 1.00
+  solver_tolerance: 0.000001
+  solver_max_iter: 100
+
+  action_descriptions:
+    monitor: "边际贡献健康，保持商业监控"
+    fare_increase: "启动票价传导机制，逐步上调"
+    hedge_position: "同时动用票价与套保工具"
+    capacity_reduction: "商业/金融工具耗尽，触发运力压降"
+
+  urgency_config:
+    1:
+      level: "低"
+      icon: "🟢"
+      color: "green"
+    2:
+      level: "中"
+      icon: "🟡"
+      color: "yellow"
+    3:
+      level: "高"
+      icon: "🟠"
+      color: "orange"
+    4:
+      level: "紧急"
+      icon: "🔴"
+      color: "red"
+
+  stage_names:
+    1: "正常监控"
+    2: "票价传导"
+    3: "套保加仓"
+    4: "削班启动"
+
+# ============================================
+# Optimizer Parameters
+# ============================================
+optimizer:
+  grid_resolution: 50
+  default_method: "grid"

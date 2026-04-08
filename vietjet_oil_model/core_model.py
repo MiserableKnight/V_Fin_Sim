@@ -16,35 +16,16 @@ import pandas as pd
 from dataclasses import dataclass, field
 from typing import Literal, Optional, Dict, List
 
-from .threshold_config import DEFAULT_THRESHOLD_CONFIG, ThresholdConfig
+from .config_loader import ModelConfig, load_config
+from .threshold_config import ThresholdConfig
+
+
+# 保留旧别名以兼容性
+LegacyModelConfig = ModelConfig
 from .optimizer_results import OptimizationResult
 from .demand_model import DemandModel, DemandCalculationResult
 from .threshold_calculator import ThresholdCalculator, ThresholdResult
 from .action_optimizer import ActionOptimizer
-
-
-@dataclass
-class ModelConfig:
-    """模型配置参数 / Model Configuration Parameters"""
-
-    # 核心运营收入（剔除飞机销售、干租赁、备件等非航线主业）
-    R_base: float = 64.94  # 万亿越南盾
-
-    # 变动成本拆分（附注36）
-    V_fuel_base: float = 24.70   # 燃油成本
-    V_other_base: float = 22.70  # 外部服务+变动人工+航路起降费等
-
-    # 固定成本拆分（附注36/31）
-    FC: float = 19.06  # 租赁+折旧+固定人工+坏账等
-
-    # 机队规模
-    fleet_size: int = 121
-
-    # 行业典型需求价格弹性
-    demand_elasticity: float = -0.8
-
-    # 网络骨架保留权重
-    network_preserve: float = 0.25
 
 
 @dataclass
@@ -92,17 +73,40 @@ class VietJetOilShockModel:
     def __init__(
         self,
         config: Optional[ModelConfig] = None,
-        threshold_config: Optional[ThresholdConfig] = None
+        config_path: Optional[str] = None,
     ):
         """
         初始化模型
 
         Args:
-            config: 模型配置
-            threshold_config: 阈值配置
+            config: 模型配置对象（如果提供则直接使用）
+            config_path: YAML 配置文件路径（如果提供则从文件加载）
+                      默认为 config/model_config.yaml
         """
-        self.config = config or ModelConfig()
-        self.threshold_config = threshold_config or DEFAULT_THRESHOLD_CONFIG
+        # 加载配置
+        if config is not None:
+            self.config = config
+        elif config_path is not None:
+            self.config = ModelConfig.from_yaml(config_path)
+        else:
+            # 尝试从默认路径加载 YAML
+            self.config = load_config()
+
+        # 创建阈值配置（从统一配置）
+        self.threshold_config = ThresholdConfig(
+            STAGE_MONITOR_THRESHOLD=self.config.stage_monitor_threshold,
+            STAGE_FARE_THRESHOLD=self.config.stage_fare_threshold,
+            STAGE_HEDGE_THRESHOLD=self.config.stage_hedge_threshold,
+            FARE_ADJUST_MIN=self.config.fare_adjust_min,
+            FARE_ADJUST_MAX=self.config.fare_adjust_max,
+            HEDGE_RATIO_MIN=self.config.hedge_ratio_min,
+            HEDGE_RATIO_MAX=self.config.hedge_ratio_max,
+            SOLVER_TOLERANCE=self.config.solver_tolerance,
+            SOLVER_MAX_ITER=self.config.solver_max_iter,
+            ACTION_DESCRIPTIONS=self.config.get_action_descriptions(),
+            URGENCY_CONFIG=self.config.get_urgency_config(),
+            STAGE_NAMES=self.config.get_stage_names()
+        )
 
         # 初始化专用模块
         self.demand_model = DemandModel()
